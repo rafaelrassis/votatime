@@ -1,10 +1,13 @@
-import jogadores from "@/data/players.json";
-import { HISTORICO } from "@/lib/store";
+import prisma from "@/lib/prisma";
 
-const escalacoes = HISTORICO.flatMap((r) => r.escalacao);
+export const dynamic = "force-dynamic";
 
-export default function Ranking() {
-  const lista = [...jogadores]
+export default async function Ranking() {
+  const jogadores = await prisma.player.findMany();
+  const historico = await prisma.round.findMany({ where: { atual: false } });
+  const escalacoes = historico.flatMap((r) => r.escalacao);
+
+  const lista = jogadores
     .map((j) => ({ ...j, titular: escalacoes.filter((id) => id === j.id).length }))
     .sort((a, b) => b.votos - a.votos);
 
@@ -34,7 +37,7 @@ export default function Ranking() {
                 </td>
                 <td>{j.posicao}</td>
                 <td>
-                  {j.titular} de {HISTORICO.length}
+                  {j.titular} de {historico.length}
                 </td>
                 <td>{j.votos.toLocaleString("pt-BR")}</td>
               </tr>

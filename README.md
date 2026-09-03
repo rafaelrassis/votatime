@@ -1,16 +1,18 @@
 # VotaTime
 
-Mock front-end da votação da escalação. Dados em `data/*.json`, voto em `localStorage`.
+Votação de escalação com Next.js + Prisma + PostgreSQL. Contagem de votos persiste no banco; a trava de "já votei nesta posição" continua no `localStorage`.
 
 ```bash
+cp .env.example .env   # ajuste DATABASE_URL
 npm install
+npx prisma db push     # cria as tabelas
+npm run db:seed        # popula com data/players.json e data/rounds.json
 npm run dev
 ```
 
-Regras do mock:
+Regras:
 - 4-3-3 fixo, 11 slots, 1 voto por posição, sem troca.
 - Jogador escalado numa posição fica travado nas outras.
 - Percentual da posição aparece só depois do voto.
 - Trava por `localStorage` (chave `escala:v1:<rodada>`), sem reCAPTCHA.
-- `data/rounds.json` guarda a rodada atual (prazo) e o histórico.
-
+- `data/*.json` são só a semente inicial do banco (`prisma/seed.js`); depois do seed, jogadores e rodadas vivem no Postgres.

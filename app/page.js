@@ -1,36 +1,59 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import jogadores from "@/data/players.json";
-import { RODADA, SLOTS, lerVotos, gravarVoto, limparVotos, prazo } from "@/lib/store";
+import { SLOTS, lerVotos, gravarVoto, limparVotos, prazo } from "@/lib/store";
 import Campo from "@/components/Campo";
 import Votacao from "@/components/Votacao";
 
 export default function Home() {
+  const [rodada, setRodada] = useState(null);
+  const [jogadores, setJogadores] = useState([]);
   const [votos, setVotos] = useState({});
   const [aberto, setAberto] = useState(null);
   const [resta, setResta] = useState(null);
 
-  useEffect(() => setVotos(lerVotos()), []);
+  useEffect(() => {
+    fetch("/api/rounds")
+      .then((r) => r.json())
+      .then((d) => setRodada(d.atual));
+    fetch("/api/players")
+      .then((r) => r.json())
+      .then(setJogadores);
+  }, []);
 
   useEffect(() => {
-    const tick = () => setResta(prazo(RODADA.fecha));
+    if (rodada) setVotos(lerVotos(rodada.id));
+  }, [rodada]);
+
+  useEffect(() => {
+    if (!rodada) return;
+    const tick = () => setResta(prazo(rodada.fecha));
     tick();
     const t = setInterval(tick, 1000);
     return () => clearInterval(t);
-  }, []);
+  }, [rodada]);
+
+  if (!rodada) return null;
 
   const feitos = Object.keys(votos).length;
 
-  function votar(slotId, playerId) {
-    setVotos(gravarVoto(slotId, playerId));
+  async function votar(slotId, playerId) {
+    setVotos(gravarVoto(rodada.id, slotId, playerId));
+    setJogadores((atual) =>
+      atual.map((j) => (j.id === playerId ? { ...j, votos: j.votos + 1 } : j))
+    );
+    await fetch("/api/votar", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ playerId }),
+    });
   }
 
   return (
     <main>
       <div className="linha-info">
         <span>
-          Rodada {RODADA.numero} · {RODADA.votantes.toLocaleString("pt-BR")} pessoas votando
+          Rodada {rodada.numero} · {rodada.votantes.toLocaleString("pt-BR")} pessoas votando
         </span>
         <span className="relogio">
           {resta
@@ -57,7 +80,7 @@ export default function Home() {
           <button
             className="limpar"
             onClick={() => {
-              limparVotos();
+              limparVotos(rodada.id);
               setVotos({});
             }}
           >

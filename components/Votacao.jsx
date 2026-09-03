@@ -6,7 +6,7 @@ import { apuracao } from "@/lib/store";
 export default function Votacao({ slot, jogadores, votos, aoVotar, aoFechar }) {
   const caixa = useRef(null);
   const jaVotou = Boolean(votos[slot.id]);
-  const lista = apuracao(jogadores, slot.posicao, votos);
+  const lista = apuracao(jogadores, slot.posicao);
 
   // usados em outras posições do mesmo grupo (ex: os dois zagueiros)
   const ocupados = Object.entries(votos)

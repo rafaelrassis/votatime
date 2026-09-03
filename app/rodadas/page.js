@@ -1,17 +1,24 @@
-import jogadores from "@/data/players.json";
-import { HISTORICO } from "@/lib/store";
+import prisma from "@/lib/prisma";
+
+export const dynamic = "force-dynamic";
 
 const data = (iso) =>
   new Date(iso).toLocaleDateString("pt-BR", { day: "2-digit", month: "long" });
 
-export default function Rodadas() {
+export default async function Rodadas() {
+  const historico = await prisma.round.findMany({
+    where: { atual: false },
+    orderBy: { numero: "desc" },
+  });
+  const jogadores = await prisma.player.findMany();
+
   return (
     <main>
       <div className="bloco">
         <h2>Times que a torcida já escalou</h2>
         <p className="ajuda">Cada rodada fecha no domingo às 21h e vira registro.</p>
 
-        {HISTORICO.map((r) => (
+        {historico.map((r) => (
           <div key={r.id} style={{ margin: "22px 0" }}>
             <strong className="condensada" style={{ fontSize: 22 }}>
               Rodada {r.numero}
