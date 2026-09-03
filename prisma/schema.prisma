@@ -17,12 +17,13 @@ model Player {
 }
 
 model Round {
-  id        String    @id
-  numero    Int       @unique
-  atual     Boolean   @default(false)
-  abre      DateTime?
-  fecha     DateTime?
-  fechada   DateTime?
-  votantes  Int       @default(0)
-  escalacao String[]  @default([])
+  id         String   @id
+  numero     Int      @unique
+  adversario String
+  mando      String
+  campeonato String
+  abre       DateTime
+  fecha      DateTime
+  votantes   Int      @default(0)
+  escalacao  String[] @default([])
 }

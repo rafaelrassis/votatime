@@ -3,9 +3,16 @@
 import { useEffect, useRef } from "react";
 import { apuracao } from "@/lib/store";
 
-export default function Votacao({ slot, jogadores, votos, aoVotar, aoFechar }) {
+export default function Votacao({
+  slot,
+  jogadores,
+  votos,
+  aoVotar,
+  aoFechar,
+  somenteLeitura = false,
+}) {
   const caixa = useRef(null);
-  const jaVotou = Boolean(votos[slot.id]);
+  const jaVotou = Boolean(votos[slot.id]) || somenteLeitura;
   const lista = apuracao(jogadores, slot.posicao);
 
   // usados em outras posições do mesmo grupo (ex: os dois zagueiros)
@@ -33,9 +40,11 @@ export default function Votacao({ slot, jogadores, votos, aoVotar, aoFechar }) {
       >
         <h2>{slot.rotulo}</h2>
         <p className="ajuda">
-          {jaVotou
-            ? "Seu voto está registrado. Veja como a torcida está votando nesta posição."
-            : "Escolha um nome. O voto vale só para esta posição e não dá pra trocar depois."}
+          {somenteLeitura
+            ? "Rodada encerrada. Este foi o resultado da posição."
+            : jaVotou
+              ? "Seu voto está registrado. Veja como a torcida está votando nesta posição."
+              : "Escolha um nome. O voto vale só para esta posição e não dá pra trocar depois."}
         </p>
 
         {lista.map((j) => {

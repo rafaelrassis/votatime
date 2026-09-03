@@ -1,32 +1,68 @@
-{
-  "atual": {
+[
+  {
+    "id": "r14",
+    "numero": 14,
+    "adversario": "Athletico-PR",
+    "mando": "fora",
+    "campeonato": "Brasileirão",
+    "abre": "2026-09-15T12:00:00-03:00",
+    "fecha": "2026-09-22T21:00:00-03:00",
+    "votantes": 0,
+    "escalacao": []
+  },
+  {
+    "id": "r13",
+    "numero": 13,
+    "adversario": "Fluminense",
+    "mando": "casa",
+    "campeonato": "Brasileirão",
+    "abre": "2026-09-08T12:00:00-03:00",
+    "fecha": "2026-09-15T21:00:00-03:00",
+    "votantes": 0,
+    "escalacao": []
+  },
+  {
     "id": "r12",
     "numero": 12,
+    "adversario": "Internacional",
+    "mando": "casa",
+    "campeonato": "Brasileirão",
     "abre": "2026-09-01T12:00:00-03:00",
     "fecha": "2026-09-08T21:00:00-03:00",
-    "votantes": 2384
+    "votantes": 2384,
+    "escalacao": []
   },
-  "historico": [
-    {
-      "id": "r11",
-      "numero": 11,
-      "fechada": "2026-09-01T21:00:00-03:00",
-      "votantes": 2117,
-      "escalacao": ["p1", "p4", "p8", "p9", "p5", "p14", "p12", "p13", "p17", "p18", "p19"]
-    },
-    {
-      "id": "r10",
-      "numero": 10,
-      "fechada": "2026-08-25T21:00:00-03:00",
-      "votantes": 1863,
-      "escalacao": ["p1", "p6", "p8", "p10", "p5", "p14", "p15", "p13", "p17", "p18", "p20"]
-    },
-    {
-      "id": "r09",
-      "numero": 9,
-      "fechada": "2026-08-18T21:00:00-03:00",
-      "votantes": 1592,
-      "escalacao": ["p2", "p4", "p9", "p8", "p7", "p12", "p14", "p16", "p21", "p18", "p19"]
-    }
-  ]
-}
+  {
+    "id": "r11",
+    "numero": 11,
+    "adversario": "Palmeiras",
+    "mando": "fora",
+    "campeonato": "Brasileirão",
+    "abre": "2026-08-25T12:00:00-03:00",
+    "fecha": "2026-09-01T21:00:00-03:00",
+    "votantes": 2117,
+    "escalacao": ["p1", "p4", "p8", "p9", "p5", "p14", "p12", "p13", "p17", "p18", "p19"]
+  },
+  {
+    "id": "r10",
+    "numero": 10,
+    "adversario": "Vasco",
+    "mando": "casa",
+    "campeonato": "Brasileirão",
+    "abre": "2026-08-18T12:00:00-03:00",
+    "fecha": "2026-08-25T21:00:00-03:00",
+    "votantes": 1863,
+    "escalacao": ["p1", "p6", "p8", "p10", "p5", "p14", "p15", "p13", "p17", "p18", "p20"]
+  },
+  {
+    "id": "r09",
+    "numero": 9,
+    "adversario": "Bahia",
+    "mando": "fora",
+    "campeonato": "Copa do Brasil",
+    "abre": "2026-08-11T12:00:00-03:00",
+    "fecha": "2026-08-18T21:00:00-03:00",
+    "votantes": 1592,
+    "escalacao": ["p2", "p4", "p9", "p8", "p7", "p12", "p14", "p16", "p21", "p18", "p19"]
+  }
+]

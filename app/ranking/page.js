@@ -4,8 +4,9 @@ export const dynamic = "force-dynamic";
 
 export default async function Ranking() {
   const jogadores = await prisma.player.findMany();
-  const historico = await prisma.round.findMany({ where: { atual: false } });
-  const escalacoes = historico.flatMap((r) => r.escalacao);
+  const rodadas = await prisma.round.findMany();
+  const fechadas = rodadas.filter((r) => r.escalacao.length > 0);
+  const escalacoes = fechadas.flatMap((r) => r.escalacao);
 
   const lista = jogadores
     .map((j) => ({ ...j, titular: escalacoes.filter((id) => id === j.id).length }))
@@ -37,7 +38,7 @@ export default async function Ranking() {
                 </td>
                 <td>{j.posicao}</td>
                 <td>
-                  {j.titular} de {historico.length}
+                  {j.titular} de {fechadas.length}
                 </td>
                 <td>{j.votos.toLocaleString("pt-BR")}</td>
               </tr>

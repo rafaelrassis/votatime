@@ -28,8 +28,7 @@ export default function RootLayout({ children }) {
               Es<span>cala</span>
             </h1>
             <nav className="menu">
-              <a href="/">Votar</a>
-              <a href="/rodadas">Rodadas</a>
+              <a href="/">Rodadas</a>
               <a href="/ranking">Ranking</a>
             </nav>
           </header>

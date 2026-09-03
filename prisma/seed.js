@@ -13,13 +13,7 @@ async function main() {
     });
   }
 
-  await prisma.round.upsert({
-    where: { id: rounds.atual.id },
-    update: { ...rounds.atual, atual: true },
-    create: { ...rounds.atual, atual: true },
-  });
-
-  for (const r of rounds.historico) {
+  for (const r of rounds) {
     await prisma.round.upsert({
       where: { id: r.id },
       update: r,
