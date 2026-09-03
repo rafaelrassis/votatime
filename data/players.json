@@ -1,0 +1,27 @@
+[
+  { "id": "p1", "nome": "Ruan Pacheco", "apelido": "Ruan", "numero": 1, "posicao": "GOL", "votos": 812 },
+  { "id": "p2", "nome": "Diego Salles", "apelido": "Salles", "numero": 12, "posicao": "GOL", "votos": 449 },
+  { "id": "p3", "nome": "Iuri Mattoso", "apelido": "Iuri", "numero": 22, "posicao": "GOL", "votos": 137 },
+
+  { "id": "p4", "nome": "Vitor Anselmo", "apelido": "Anselmo", "numero": 2, "posicao": "LAT", "votos": 690 },
+  { "id": "p5", "nome": "Kauã Dorneles", "apelido": "Kauã", "numero": 6, "posicao": "LAT", "votos": 604 },
+  { "id": "p6", "nome": "Régis Amaral", "apelido": "Régis", "numero": 16, "posicao": "LAT", "votos": 388 },
+  { "id": "p7", "nome": "Ademir Rocha", "apelido": "Ademir", "numero": 26, "posicao": "LAT", "votos": 205 },
+
+  { "id": "p8", "nome": "Bruno Tavares", "apelido": "Tavares", "numero": 3, "posicao": "ZAG", "votos": 901 },
+  { "id": "p9", "nome": "Everton Pires", "apelido": "Pires", "numero": 4, "posicao": "ZAG", "votos": 733 },
+  { "id": "p10", "nome": "Lucas Bandeira", "apelido": "Bandeira", "numero": 14, "posicao": "ZAG", "votos": 412 },
+  { "id": "p11", "nome": "Cauê Nogueira", "apelido": "Cauê", "numero": 24, "posicao": "ZAG", "votos": 188 },
+
+  { "id": "p12", "nome": "Wesley Prado", "apelido": "Wesley", "numero": 5, "posicao": "MEI", "votos": 877 },
+  { "id": "p13", "nome": "Théo Bittencourt", "apelido": "Théo", "numero": 8, "posicao": "MEI", "votos": 795 },
+  { "id": "p14", "nome": "Danilo Farias", "apelido": "Danilo", "numero": 10, "posicao": "MEI", "votos": 1043 },
+  { "id": "p15", "nome": "Igor Sampaio", "apelido": "Sampaio", "numero": 18, "posicao": "MEI", "votos": 466 },
+  { "id": "p16", "nome": "Márcio Leal", "apelido": "Leal", "numero": 20, "posicao": "MEI", "votos": 231 },
+
+  { "id": "p17", "nome": "Gabriel Xavier", "apelido": "Gabi", "numero": 7, "posicao": "ATA", "votos": 958 },
+  { "id": "p18", "nome": "Rian Fontes", "apelido": "Rian", "numero": 9, "posicao": "ATA", "votos": 1120 },
+  { "id": "p19", "nome": "Juninho Peçanha", "apelido": "Juninho", "numero": 11, "posicao": "ATA", "votos": 702 },
+  { "id": "p20", "nome": "Alan Kruger", "apelido": "Kruger", "numero": 17, "posicao": "ATA", "votos": 351 },
+  { "id": "p21", "nome": "Tiago Bastos", "apelido": "Bastos", "numero": 19, "posicao": "ATA", "votos": 274 }
+]
