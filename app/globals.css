@@ -313,7 +313,9 @@ a { color: inherit; }
   padding: 16px 18px;
   text-decoration: none;
   color: var(--cal);
+  cursor: pointer;
 }
+.cartao-jogo:focus-visible { outline: 2px solid var(--amarelo); outline-offset: 2px; }
 
 .cartao-jogo.em-breve { opacity: 0.6; }
 .cartao-jogo.encerrada { opacity: 0.85; }

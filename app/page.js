@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   SLOTS,
   status,
@@ -32,6 +33,7 @@ const horaJogo = (iso) =>
   new Date(iso).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
 
 export default function Home() {
+  const router = useRouter();
   const [rodadas, setRodadas] = useState([]);
   const [feitos, setFeitos] = useState({});
   const [previsoes, setPrevisoes] = useState({});
@@ -102,7 +104,7 @@ export default function Home() {
       )}
 
       <p className="ajuda" style={{ margin: "14px 0 18px" }}>
-        Toque num jogo para escalar o time. Toque no escudo pra prever o resultado.
+        Toque no jogo pra prever o resultado. Toque no escudo pra escalar o time.
       </p>
 
       <div className="lista-jogos">
@@ -113,10 +115,13 @@ export default function Home() {
           const escudoAdversario = buscarEscudo(times, r.adversario);
           const escudoNosso = buscarEscudo(times, NOSSO_TIME.nome);
 
-          const abrirPrevisao = (e) => {
-            e.preventDefault();
+          // clicar no card abre o comparativo de previsão (quem vence)
+          const abrirPrevisao = () => setAberta(r.id);
+
+          // clicar no escudo de qualquer um dos times abre a escalação (campo)
+          const abrirCampo = (e) => {
             e.stopPropagation();
-            setAberta(r.id);
+            router.push(`/rodada/${r.id}`);
           };
 
           const casa =
@@ -129,7 +134,14 @@ export default function Home() {
               : { nome: r.adversario, escudo: escudoAdversario };
 
           return (
-            <Link key={r.id} href={`/rodada/${r.id}`} className={`cartao-jogo ${st}`}>
+            <div
+              key={r.id}
+              className={`cartao-jogo ${st}`}
+              role="button"
+              tabIndex={0}
+              onClick={abrirPrevisao}
+              onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && abrirPrevisao()}
+            >
               {st === "aberta" && (
                 <span className="selo-aberta">
                   Votação aberta
@@ -145,7 +157,7 @@ export default function Home() {
 
               <div className="linha-jogo">
                 <div className="time-jogo">
-                  <Brasao nome={casa.nome} escudo={casa.escudo} tamanho={46} onClick={abrirPrevisao} />
+                  <Brasao nome={casa.nome} escudo={casa.escudo} tamanho={46} onClick={abrirCampo} />
                 </div>
 
                 <div className="centro-jogo">
@@ -156,7 +168,7 @@ export default function Home() {
                 </div>
 
                 <div className="time-jogo">
-                  <Brasao nome={fora.nome} escudo={fora.escudo} tamanho={46} onClick={abrirPrevisao} />
+                  <Brasao nome={fora.nome} escudo={fora.escudo} tamanho={46} onClick={abrirCampo} />
                 </div>
               </div>
 
@@ -169,7 +181,7 @@ export default function Home() {
                       ? "Você escalou os 11"
                       : `Você votou em ${meus} de ${SLOTS.length}`}
               </span>
-            </Link>
+            </div>
           );
         })}
       </div>
