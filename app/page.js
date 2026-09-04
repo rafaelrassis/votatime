@@ -11,6 +11,7 @@ import {
   lerPrevisao,
   gravarPrevisao,
 } from "@/lib/store";
+import { buscarEscudo } from "@/lib/escudos";
 import Brasao from "@/components/Brasao";
 import Previsao from "@/components/Previsao";
 
@@ -21,11 +22,16 @@ const dia = (iso) =>
     month: "2-digit",
   });
 
+const horaJogo = (iso) =>
+  new Date(iso).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+
 export default function Home() {
   const [rodadas, setRodadas] = useState([]);
   const [feitos, setFeitos] = useState({});
   const [previsoes, setPrevisoes] = useState({});
   const [aberta, setAberta] = useState(null);
+  const [times, setTimes] = useState([]);
+  const [proximosJogos, setProximosJogos] = useState([]);
   const [, setTick] = useState(0);
 
   useEffect(() => {
@@ -35,6 +41,12 @@ export default function Home() {
         setRodadas(lista);
         setPrevisoes(Object.fromEntries(lista.map((r) => [r.id, lerPrevisao(r.id)])));
       });
+    fetch("/api/teams")
+      .then((r) => r.json())
+      .then(setTimes);
+    fetch("/api/matches")
+      .then((r) => r.json())
+      .then((lista) => setProximosJogos(lista.slice(0, 8)));
     const t = setInterval(() => setTick((n) => n + 1), 1000);
     return () => clearInterval(t);
   }, []);
@@ -58,6 +70,31 @@ export default function Home() {
 
   return (
     <main>
+      {proximosJogos.length > 0 && (
+        <div className="bloco" style={{ marginTop: 0 }}>
+          <h2>Jogos de hoje e da semana</h2>
+          <div className="jogos-tira">
+            {proximosJogos.map((p) => (
+              <div className="jogo-mini" key={p.id}>
+                <span className="jogo-mini-comp condensada">{p.competitionCode}</span>
+                <div className="jogo-mini-confronto">
+                  <img src={p.homeCrest} alt={p.homeTeam} title={p.homeTeam} />
+                  <span className="jogo-mini-placar">
+                    {p.status === "FINISHED"
+                      ? `${p.homeScore} - ${p.awayScore}`
+                      : horaJogo(p.utcDate)}
+                  </span>
+                  <img src={p.awayCrest} alt={p.awayTeam} title={p.awayTeam} />
+                </div>
+              </div>
+            ))}
+          </div>
+          <Link href="/jogos" className="ajuda" style={{ display: "inline-block", marginTop: 8 }}>
+            Ver todos os jogos →
+          </Link>
+        </div>
+      )}
+
       <p className="ajuda" style={{ margin: "14px 0 18px" }}>
         Toque numa rodada para escalar o time. Toque no brasão pra prever o resultado.
       </p>
@@ -67,6 +104,7 @@ export default function Home() {
           const st = status(r);
           const resta = prazo(r.fecha);
           const meus = feitos[r.id] || 0;
+          const escudoAdversario = buscarEscudo(times, r.adversario);
           return (
             <Link key={r.id} href={`/rodada/${r.id}`} className={`cartao ${st}`}>
               <span className="etiqueta">
@@ -87,6 +125,7 @@ export default function Home() {
               >
                 <Brasao
                   nome={r.adversario}
+                  escudo={escudoAdversario}
                   tamanho={32}
                   onClick={(e) => {
                     e.preventDefault();
@@ -119,6 +158,8 @@ export default function Home() {
         <Previsao
           rodada={rodadaAberta}
           previsao={previsoes[rodadaAberta.id]}
+          escudoAdversario={buscarEscudo(times, rodadaAberta.adversario)}
+          escudoClube={null}
           aoPrever={(lado) => prever(rodadaAberta.id, lado)}
           aoFechar={() => setAberta(null)}
         />

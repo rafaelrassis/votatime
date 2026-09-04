@@ -14,7 +14,23 @@ function iniciais(nome) {
     .toUpperCase();
 }
 
-export default function Brasao({ nome, tamanho = 48, onClick }) {
+// Mostra o escudo real (quando sincronizado via npm run sync:jogos);
+// sem escudo, cai no círculo com iniciais coloridas de sempre.
+export default function Brasao({ nome, escudo, tamanho = 48, onClick }) {
+  if (escudo) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        className="brasao brasao-img"
+        style={{ width: tamanho, height: tamanho }}
+        aria-label={nome}
+      >
+        <img src={escudo} alt="" width={tamanho} height={tamanho} />
+      </button>
+    );
+  }
+
   return (
     <button
       type="button"

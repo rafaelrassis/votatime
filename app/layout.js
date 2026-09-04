@@ -29,6 +29,7 @@ export default function RootLayout({ children }) {
             </h1>
             <nav className="menu">
               <a href="/">Rodadas</a>
+              <a href="/jogos">Jogos</a>
               <a href="/ranking">Ranking</a>
             </nav>
           </header>

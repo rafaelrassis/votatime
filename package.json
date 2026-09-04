@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "postinstall": "prisma generate",
-    "db:seed": "node prisma/seed.js"
+    "db:seed": "node prisma/seed.js",
+    "sync:jogos": "node scripts/sync-jogos.js"
   },
   "prisma": {
     "seed": "node prisma/seed.js"

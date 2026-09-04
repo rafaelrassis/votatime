@@ -29,3 +29,30 @@ model Round {
   votosCasa  Int      @default(0)
   votosFora  Int      @default(0)
 }
+
+// Escudos reais dos clubes, sincronizados via football-data.org
+// (scripts/sync-jogos.js). id = nome normalizado (sem acento/sufixo).
+model Team {
+  id     String @id
+  nome   String
+  escudo String
+}
+
+// Jogos reais dos principais campeonatos, mesma fonte.
+model Match {
+  id              Int      @id
+  competition     String
+  competitionCode String
+  matchday        Int?
+  utcDate         DateTime
+  status          String
+  homeTeam        String
+  homeCrest       String
+  awayTeam        String
+  awayCrest       String
+  homeScore       Int?
+  awayScore       Int?
+
+  @@index([utcDate])
+  @@index([competitionCode])
+}

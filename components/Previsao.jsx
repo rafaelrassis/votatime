@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import Brasao from "@/components/Brasao";
 import { CLUBE } from "@/lib/store";
 
-export default function Previsao({ rodada, previsao, aoPrever, aoFechar }) {
+export default function Previsao({ rodada, previsao, escudoClube, escudoAdversario, aoPrever, aoFechar }) {
   const [arrastoX, setArrastoX] = useState(0);
   const inicio = useRef(null);
   const jaVotou = Boolean(previsao);
@@ -15,6 +15,8 @@ export default function Previsao({ rodada, previsao, aoPrever, aoFechar }) {
 
   const nomeCasa = rodada.mando === "casa" ? CLUBE : rodada.adversario;
   const nomeFora = rodada.mando === "casa" ? rodada.adversario : CLUBE;
+  const escudoCasa = rodada.mando === "casa" ? escudoClube : escudoAdversario;
+  const escudoFora = rodada.mando === "casa" ? escudoAdversario : escudoClube;
 
   function onTouchStart(e) {
     inicio.current = e.touches[0].clientX;
@@ -48,13 +50,23 @@ export default function Previsao({ rodada, previsao, aoPrever, aoFechar }) {
           style={{ transform: `translateX(${jaVotou ? 0 : arrastoX * 0.2}px)` }}
         >
           <div className={`lado${previsao === "casa" ? " escolhido" : ""}`}>
-            <Brasao nome={nomeCasa} tamanho={72} onClick={() => !jaVotou && aoPrever("casa")} />
+            <Brasao
+              nome={nomeCasa}
+              escudo={escudoCasa}
+              tamanho={72}
+              onClick={() => !jaVotou && aoPrever("casa")}
+            />
             <span>{nomeCasa}</span>
             {jaVotou && <b>{pctCasa}%</b>}
           </div>
           <span className="x">×</span>
           <div className={`lado${previsao === "fora" ? " escolhido" : ""}`}>
-            <Brasao nome={nomeFora} tamanho={72} onClick={() => !jaVotou && aoPrever("fora")} />
+            <Brasao
+              nome={nomeFora}
+              escudo={escudoFora}
+              tamanho={72}
+              onClick={() => !jaVotou && aoPrever("fora")}
+            />
             <span>{nomeFora}</span>
             {jaVotou && <b>{pctFora}%</b>}
           </div>
