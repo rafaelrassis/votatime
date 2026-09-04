@@ -22,7 +22,7 @@ const prisma = new PrismaClient();
 
 // Códigos das principais competições cobertas pelo plano free do football-data.org.
 const COMPETICOES = ["BSA", "CL", "PL", "PD", "BL1", "FL1", "SA"];
-const JANELA_DIAS = 15; // hoje até +15 dias, pra lista de "jogos reais"
+const JANELA_DIAS = 10; // hoje até +10 dias — limite do plano free da API
 
 function normalizar(nome) {
   return nome
