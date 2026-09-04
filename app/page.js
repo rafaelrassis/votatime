@@ -2,7 +2,17 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { SLOTS, status, ROTULO, prazo, progresso } from "@/lib/store";
+import {
+  SLOTS,
+  status,
+  ROTULO,
+  prazo,
+  progresso,
+  lerPrevisao,
+  gravarPrevisao,
+} from "@/lib/store";
+import Brasao from "@/components/Brasao";
+import Previsao from "@/components/Previsao";
 
 const dia = (iso) =>
   new Date(iso).toLocaleDateString("pt-BR", {
@@ -14,12 +24,17 @@ const dia = (iso) =>
 export default function Home() {
   const [rodadas, setRodadas] = useState([]);
   const [feitos, setFeitos] = useState({});
+  const [previsoes, setPrevisoes] = useState({});
+  const [aberta, setAberta] = useState(null);
   const [, setTick] = useState(0);
 
   useEffect(() => {
     fetch("/api/rounds")
       .then((r) => r.json())
-      .then(setRodadas);
+      .then((lista) => {
+        setRodadas(lista);
+        setPrevisoes(Object.fromEntries(lista.map((r) => [r.id, lerPrevisao(r.id)])));
+      });
     const t = setInterval(() => setTick((n) => n + 1), 1000);
     return () => clearInterval(t);
   }, []);
@@ -28,10 +43,23 @@ export default function Home() {
     setFeitos(Object.fromEntries(rodadas.map((r) => [r.id, progresso(r.id)])));
   }, [rodadas]);
 
+  async function prever(rodadaId, lado) {
+    setPrevisoes((p) => ({ ...p, [rodadaId]: gravarPrevisao(rodadaId, lado) }));
+    const res = await fetch("/api/prever", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ roundId: rodadaId, lado }),
+    });
+    const atualizada = await res.json();
+    setRodadas((rs) => rs.map((r) => (r.id === rodadaId ? atualizada : r)));
+  }
+
+  const rodadaAberta = rodadas.find((r) => r.id === aberta);
+
   return (
     <main>
       <p className="ajuda" style={{ margin: "14px 0 18px" }}>
-        Toque numa rodada para escalar o time.
+        Toque numa rodada para escalar o time. Toque no brasão pra prever o resultado.
       </p>
 
       <div className="grade">
@@ -53,7 +81,19 @@ export default function Home() {
                 )}
               </span>
 
-              <span className="confronto condensada">
+              <span
+                className="confronto condensada"
+                style={{ display: "flex", alignItems: "center", gap: 10 }}
+              >
+                <Brasao
+                  nome={r.adversario}
+                  tamanho={32}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setAberta(r.id);
+                  }}
+                />
                 {r.mando === "casa" ? "Em casa contra" : "Fora contra"} {r.adversario}
               </span>
 
@@ -74,6 +114,15 @@ export default function Home() {
           );
         })}
       </div>
+
+      {rodadaAberta && (
+        <Previsao
+          rodada={rodadaAberta}
+          previsao={previsoes[rodadaAberta.id]}
+          aoPrever={(lado) => prever(rodadaAberta.id, lado)}
+          aoFechar={() => setAberta(null)}
+        />
+      )}
     </main>
   );
 }

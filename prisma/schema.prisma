@@ -26,4 +26,6 @@ model Round {
   fecha      DateTime
   votantes   Int      @default(0)
   escalacao  String[] @default([])
+  votosCasa  Int      @default(0)
+  votosFora  Int      @default(0)
 }

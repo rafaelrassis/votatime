@@ -332,3 +332,36 @@ a { color: inherit; }
 .rodape { font-size: 14px; margin-top: 4px; }
 
 .ajuda { color: var(--cinza); font-size: 14px; }
+
+/* brasões / previsão de resultado ---------------------------------------- */
+.brasao {
+  border: 0;
+  border-radius: 50%;
+  color: #fff;
+  font-family: var(--fonte-titulo), sans-serif;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.confronto-previsao {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px 0;
+  touch-action: pan-y;
+}
+
+.confronto-previsao .lado {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+.confronto-previsao .lado.escolhido { opacity: 1; }
+.confronto-previsao .x { color: var(--cinza); font-size: 20px; }
