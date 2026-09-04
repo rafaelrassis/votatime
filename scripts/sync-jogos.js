@@ -4,6 +4,7 @@
 const fs = require("fs");
 const path = require("path");
 const { PrismaClient } = require("@prisma/client");
+const { footballApi } = require("../lib/footballApi");
 
 function carregarEnv() {
   const arq = path.join(__dirname, "..", ".env");
@@ -33,22 +34,12 @@ function normalizar(nome) {
     .trim();
 }
 
-async function chamar(caminho) {
-  const res = await fetch(`https://api.football-data.org/v4${caminho}`, {
-    headers: { "X-Auth-Token": process.env.FOOTBALL_DATA_API_KEY },
-  });
-  if (!res.ok) {
-    throw new Error(`football-data.org respondeu ${res.status} em ${caminho}: ${await res.text()}`);
-  }
-  return res.json();
-}
-
 // Escudos: pega o elenco de clubes de cada competição (cobre times mesmo
 // sem jogo marcado nos próximos dias, ex. adversários das rodadas mock).
 async function sincronizarEscudos() {
   let total = 0;
   for (const codigo of COMPETICOES) {
-    const { teams } = await chamar(`/competitions/${codigo}/teams`);
+    const { teams } = await footballApi(`/competitions/${codigo}/teams`);
     for (const t of teams || []) {
       if (!t.crest) continue;
       const id = normalizar(t.name);
@@ -71,7 +62,7 @@ async function sincronizarPartidas() {
   const fim = new Date(hoje.getTime() + JANELA_DIAS * 86400000);
   const dateFrom = hoje.toISOString().slice(0, 10);
   const dateTo = fim.toISOString().slice(0, 10);
-  const { matches } = await chamar(
+  const { matches } = await footballApi(
     `/matches?competitions=${COMPETICOES.join(",")}&dateFrom=${dateFrom}&dateTo=${dateTo}`
   );
 
