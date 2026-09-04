@@ -5,7 +5,7 @@ import Link from "next/link";
 import {
   SLOTS,
   status,
-  ROTULO,
+  NOSSO_TIME,
   prazo,
   progresso,
   lerPrevisao,
@@ -15,12 +15,18 @@ import { buscarEscudo } from "@/lib/escudos";
 import Brasao from "@/components/Brasao";
 import Previsao from "@/components/Previsao";
 
-const dia = (iso) =>
-  new Date(iso).toLocaleDateString("pt-BR", {
-    weekday: "short",
-    day: "2-digit",
-    month: "2-digit",
-  });
+const ehHoje = (iso) => {
+  const d = new Date(iso);
+  const hoje = new Date();
+  return (
+    d.getDate() === hoje.getDate() &&
+    d.getMonth() === hoje.getMonth() &&
+    d.getFullYear() === hoje.getFullYear()
+  );
+};
+
+const dataCurta = (iso) =>
+  new Date(iso).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
 
 const horaJogo = (iso) =>
   new Date(iso).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
@@ -96,51 +102,65 @@ export default function Home() {
       )}
 
       <p className="ajuda" style={{ margin: "14px 0 18px" }}>
-        Toque numa rodada para escalar o time. Toque no brasão pra prever o resultado.
+        Toque num jogo para escalar o time. Toque no escudo pra prever o resultado.
       </p>
 
-      <div className="grade">
+      <div className="lista-jogos">
         {rodadas.map((r) => {
           const st = status(r);
           const resta = prazo(r.fecha);
           const meus = feitos[r.id] || 0;
           const escudoAdversario = buscarEscudo(times, r.adversario);
+          const escudoNosso = buscarEscudo(times, NOSSO_TIME.nome);
+
+          const abrirPrevisao = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setAberta(r.id);
+          };
+
+          const casa =
+            r.mando === "casa"
+              ? { nome: NOSSO_TIME.nome, escudo: escudoNosso }
+              : { nome: r.adversario, escudo: escudoAdversario };
+          const fora =
+            r.mando === "fora"
+              ? { nome: NOSSO_TIME.nome, escudo: escudoNosso }
+              : { nome: r.adversario, escudo: escudoAdversario };
+
           return (
-            <Link key={r.id} href={`/rodada/${r.id}`} className={`cartao ${st}`}>
-              <span className="etiqueta">
-                {ROTULO[st]}
-                {st === "aberta" && resta && (
-                  <b>
-                    {" "}
-                    {resta.dias}d {String(resta.horas).padStart(2, "0")}:
-                    {String(resta.min).padStart(2, "0")}:
-                    {String(resta.seg).padStart(2, "0")}
-                  </b>
-                )}
-              </span>
+            <Link key={r.id} href={`/rodada/${r.id}`} className={`cartao-jogo ${st}`}>
+              {st === "aberta" && (
+                <span className="selo-aberta">
+                  Votação aberta
+                  {resta && (
+                    <b>
+                      {" "}
+                      {resta.dias}d {String(resta.horas).padStart(2, "0")}:
+                      {String(resta.min).padStart(2, "0")}
+                    </b>
+                  )}
+                </span>
+              )}
 
-              <span
-                className="confronto condensada"
-                style={{ display: "flex", alignItems: "center", gap: 10 }}
-              >
-                <Brasao
-                  nome={r.adversario}
-                  escudo={escudoAdversario}
-                  tamanho={32}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setAberta(r.id);
-                  }}
-                />
-                {r.mando === "casa" ? "Em casa contra" : "Fora contra"} {r.adversario}
-              </span>
+              <div className="linha-jogo">
+                <div className="time-jogo">
+                  <Brasao nome={casa.nome} escudo={casa.escudo} tamanho={46} onClick={abrirPrevisao} />
+                </div>
 
-              <span className="meta">
-                Rodada {r.numero} · {r.campeonato} · fecha {dia(r.fecha)}
-              </span>
+                <div className="centro-jogo">
+                  <span className="horario-jogo">{horaJogo(r.fecha)}</span>
+                  <span className="data-jogo">
+                    {st === "em-breve" ? "Em breve" : ehHoje(r.fecha) ? "Hoje" : dataCurta(r.fecha)}
+                  </span>
+                </div>
 
-              <span className="rodape">
+                <div className="time-jogo">
+                  <Brasao nome={fora.nome} escudo={fora.escudo} tamanho={46} onClick={abrirPrevisao} />
+                </div>
+              </div>
+
+              <span className="rodape-jogo">
                 {st === "encerrada"
                   ? `${r.votantes.toLocaleString("pt-BR")} votos · escalação definida`
                   : st === "em-breve"

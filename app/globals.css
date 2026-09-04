@@ -293,43 +293,68 @@ a { color: inherit; }
   * { transition: none !important; }
 }
 
-/* lista de rodadas ------------------------------------------------------ */
-.grade {
+/* lista de rodadas (cards estilo placar) --------------------------------- */
+.lista-jogos {
   display: grid;
   gap: 10px;
   grid-template-columns: 1fr;
 }
 
 @media (min-width: 700px) {
-  .grade { grid-template-columns: 1fr 1fr; }
+  .lista-jogos { grid-template-columns: 1fr 1fr; }
 }
 
-.cartao {
-  display: grid;
-  gap: 4px;
-  padding: 14px 16px;
-  background: #f2f1ec;
-  border: 1px solid #d6d5ce;
-  border-left: 5px solid var(--cinza);
+.cartao-jogo {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--carvao);
+  border-radius: 14px;
+  padding: 16px 18px;
   text-decoration: none;
+  color: var(--cal);
 }
 
-.cartao:hover, .cartao:focus-visible { border-color: var(--carvao); }
-.cartao.aberta { border-left-color: var(--amarelo); background: #fbf7ea; }
-.cartao.encerrada { border-left-color: var(--gramado); }
-.cartao.em-breve { opacity: 0.72; }
+.cartao-jogo.em-breve { opacity: 0.6; }
+.cartao-jogo.encerrada { opacity: 0.85; }
 
-.etiqueta { font-size: 13px; color: var(--cinza); }
-.etiqueta b {
-  font-family: var(--fonte-titulo), sans-serif;
-  font-size: 16px;
-  color: var(--carvao);
+.selo-aberta {
+  font-size: 12px;
+  color: var(--amarelo);
   font-variant-numeric: tabular-nums;
 }
 
-.confronto { font-size: 26px; line-height: 1.05; font-weight: 600; }
-.meta { font-size: 13px; color: var(--cinza); }
-.rodape { font-size: 14px; margin-top: 4px; }
+.linha-jogo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.time-jogo { display: grid; place-items: center; }
+
+.centro-jogo {
+  text-align: center;
+  min-width: 90px;
+}
+
+.horario-jogo {
+  font-family: var(--fonte-titulo), sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  display: block;
+  font-variant-numeric: tabular-nums;
+}
+
+.data-jogo {
+  font-size: 13px;
+  color: var(--cinza);
+}
+
+.rodape-jogo {
+  font-size: 13px;
+  color: var(--cinza);
+  text-align: center;
+}
 
 .ajuda { color: var(--cinza); font-size: 14px; }
 
