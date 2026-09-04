@@ -20,8 +20,8 @@ carregarEnv();
 
 const prisma = new PrismaClient();
 
-// Códigos das principais competições cobertas pelo plano free do football-data.org.
-const COMPETICOES = ["BSA", "CL", "PL", "PD", "BL1", "FL1", "SA"];
+// MVP: só Brasileirão Série A — única competição brasileira do plano free do football-data.org.
+const COMPETICOES = ["BSA"];
 const JANELA_DIAS = 10; // hoje até +10 dias — limite do plano free da API
 
 function normalizar(nome) {
