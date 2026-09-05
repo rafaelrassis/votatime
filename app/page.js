@@ -3,18 +3,9 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {
-  SLOTS,
-  status,
-  NOSSO_TIME,
-  prazo,
-  progresso,
-  lerPrevisao,
-  gravarPrevisao,
-} from "@/lib/store";
+import { SLOTS, status, NOSSO_TIME, prazo, progresso } from "@/lib/store";
 import { buscarEscudo } from "@/lib/escudos";
 import Brasao from "@/components/Brasao";
-import Previsao from "@/components/Previsao";
 
 const ehHoje = (iso) => {
   const d = new Date(iso);
@@ -36,8 +27,6 @@ export default function Home() {
   const router = useRouter();
   const [rodadas, setRodadas] = useState([]);
   const [feitos, setFeitos] = useState({});
-  const [previsoes, setPrevisoes] = useState({});
-  const [aberta, setAberta] = useState(null);
   const [times, setTimes] = useState([]);
   const [proximosJogos, setProximosJogos] = useState([]);
   const [, setTick] = useState(0);
@@ -45,10 +34,7 @@ export default function Home() {
   useEffect(() => {
     fetch("/api/rounds")
       .then((r) => r.json())
-      .then((lista) => {
-        setRodadas(lista);
-        setPrevisoes(Object.fromEntries(lista.map((r) => [r.id, lerPrevisao(r.id)])));
-      });
+      .then(setRodadas);
     fetch("/api/teams")
       .then((r) => r.json())
       .then(setTimes);
@@ -62,19 +48,6 @@ export default function Home() {
   useEffect(() => {
     setFeitos(Object.fromEntries(rodadas.map((r) => [r.id, progresso(r.id)])));
   }, [rodadas]);
-
-  async function prever(rodadaId, lado) {
-    setPrevisoes((p) => ({ ...p, [rodadaId]: gravarPrevisao(rodadaId, lado) }));
-    const res = await fetch("/api/prever", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ roundId: rodadaId, lado }),
-    });
-    const atualizada = await res.json();
-    setRodadas((rs) => rs.map((r) => (r.id === rodadaId ? atualizada : r)));
-  }
-
-  const rodadaAberta = rodadas.find((r) => r.id === aberta);
 
   return (
     <main>
@@ -115,8 +88,8 @@ export default function Home() {
           const escudoAdversario = buscarEscudo(times, r.adversario);
           const escudoNosso = buscarEscudo(times, NOSSO_TIME.nome);
 
-          // clicar no card abre o comparativo de previsão (quem vence)
-          const abrirPrevisao = () => setAberta(r.id);
+          // clicar no card abre a tela de previsão (quem vence)
+          const abrirPrevisao = () => router.push(`/previsao/${r.id}`);
 
           // clicar no escudo de qualquer um dos times abre a escalação (campo)
           const abrirCampo = (e) => {
@@ -185,17 +158,6 @@ export default function Home() {
           );
         })}
       </div>
-
-      {rodadaAberta && (
-        <Previsao
-          rodada={rodadaAberta}
-          previsao={previsoes[rodadaAberta.id]}
-          escudoAdversario={buscarEscudo(times, rodadaAberta.adversario)}
-          escudoClube={null}
-          aoPrever={(lado) => prever(rodadaAberta.id, lado)}
-          aoFechar={() => setAberta(null)}
-        />
-      )}
     </main>
   );
 }
