@@ -36,3 +36,17 @@ Regras:
 - Rode `npm run sync:jogos` periodicamente (cron, GitHub Action, etc.) — o app não
   sincroniza sozinho a cada acesso. O plano free tem limite de ~10 chamadas/min; o
   script já respeita isso.
+- `Team.apiId` (id numérico do time na football-data.org) é gravado por esse script e
+  usado por `/api/squad` pra buscar o elenco do adversário — rode `sync:jogos` de novo
+  depois de atualizar o banco pra esse campo ser preenchido.
+
+## Elenco do adversário na tela de previsão
+
+- `/previsao/[id]` mostra os 5 jogadores mais votados do nosso time e, do lado do
+  adversário, 5 jogadores do elenco real (sem votos — a torcida só vota na escalação
+  do próprio time).
+- O elenco do adversário é buscado sob demanda em `/api/squad?time=<id>` na primeira
+  vez que alguém abre aquele confronto, e fica cacheado no Postgres (tabela `Player`,
+  com `time` diferente de `"gremio"`) — não é uma sincronização em lote.
+- Depois de atualizar `prisma/schema.prisma` (campos `Player.time` e `Team.apiId`),
+  rode `npx prisma db push` de novo pra aplicar no banco.

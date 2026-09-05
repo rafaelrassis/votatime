@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma";
 export const dynamic = "force-dynamic";
 
 export default async function Ranking() {
-  const jogadores = await prisma.player.findMany();
+  const jogadores = await prisma.player.findMany({ where: { time: "gremio" } });
   const rodadas = await prisma.round.findMany();
   const fechadas = rodadas.filter((r) => r.escalacao.length > 0);
   const escalacoes = fechadas.flatMap((r) => r.escalacao);

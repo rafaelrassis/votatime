@@ -45,8 +45,8 @@ async function sincronizarEscudos() {
       const id = normalizar(t.name);
       await prisma.team.upsert({
         where: { id },
-        update: { nome: t.name, escudo: t.crest },
-        create: { id, nome: t.name, escudo: t.crest },
+        update: { nome: t.name, escudo: t.crest, apiId: t.id },
+        create: { id, nome: t.name, escudo: t.crest, apiId: t.id },
       });
       total++;
     }

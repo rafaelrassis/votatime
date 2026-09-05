@@ -14,6 +14,10 @@ model Player {
   numero  Int
   posicao String
   votos   Int    @default(0)
+  // id do Team dono desse jogador ("gremio" = nosso elenco, votável;
+  // qualquer outro = elenco de adversário, cacheado da football-data.org
+  // sob demanda em /api/squad, sem votos.
+  time    String @default("gremio")
 }
 
 model Round {
@@ -36,6 +40,9 @@ model Team {
   id     String @id
   nome   String
   escudo String
+  // id numérico do time na football-data.org, usado pra buscar o elenco
+  // (endpoint /teams/{apiId}) em /api/squad.
+  apiId  Int?   @unique
 }
 
 // Jogos reais dos principais campeonatos, mesma fonte.

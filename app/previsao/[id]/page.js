@@ -3,15 +3,16 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams, notFound } from "next/navigation";
-import { CLUBE, lerPrevisao, gravarPrevisao } from "@/lib/store";
-import { buscarEscudo } from "@/lib/escudos";
+import { NOSSO_TIME, lerPrevisao, gravarPrevisao } from "@/lib/store";
+import { buscarEscudo, buscarTimeId } from "@/lib/escudos";
 import Brasao from "@/components/Brasao";
 
 export default function PrevisaoPage() {
   const { id } = useParams();
   const [rodada, setRodada] = useState(undefined);
   const [times, setTimes] = useState([]);
-  const [jogadores, setJogadores] = useState([]);
+  const [squadCasa, setSquadCasa] = useState(null);
+  const [squadFora, setSquadFora] = useState(null);
   const [previsao, setPrevisao] = useState(null);
 
   useEffect(() => {
@@ -21,14 +22,34 @@ export default function PrevisaoPage() {
     fetch("/api/teams")
       .then((r) => r.json())
       .then(setTimes);
-    fetch("/api/players")
-      .then((r) => r.json())
-      .then(setJogadores);
   }, [id]);
 
   useEffect(() => {
     if (rodada) setPrevisao(lerPrevisao(rodada.id));
   }, [rodada]);
+
+  const timeCasaId = rodada
+    ? buscarTimeId(times, rodada.mando === "casa" ? NOSSO_TIME.nome : rodada.adversario)
+    : null;
+  const timeForaId = rodada
+    ? buscarTimeId(times, rodada.mando === "casa" ? rodada.adversario : NOSSO_TIME.nome)
+    : null;
+
+  useEffect(() => {
+    if (!timeCasaId) return;
+    setSquadCasa(null);
+    fetch(`/api/squad?time=${timeCasaId}`)
+      .then((r) => r.json())
+      .then(setSquadCasa);
+  }, [timeCasaId]);
+
+  useEffect(() => {
+    if (!timeForaId) return;
+    setSquadFora(null);
+    fetch(`/api/squad?time=${timeForaId}`)
+      .then((r) => r.json())
+      .then(setSquadFora);
+  }, [timeForaId]);
 
   if (rodada === undefined) return null;
   if (rodada === null) return notFound();
@@ -38,13 +59,12 @@ export default function PrevisaoPage() {
   const pctCasa = Math.round(((rodada.votosCasa || 0) / total) * 100);
   const pctFora = 100 - pctCasa;
 
-  const escudoAdversario = buscarEscudo(times, rodada.adversario);
-  const nomeCasa = rodada.mando === "casa" ? CLUBE : rodada.adversario;
-  const nomeFora = rodada.mando === "casa" ? rodada.adversario : CLUBE;
-  const escudoCasa = rodada.mando === "casa" ? null : escudoAdversario;
-  const escudoFora = rodada.mando === "casa" ? escudoAdversario : null;
+  const nomeCasa = rodada.mando === "casa" ? NOSSO_TIME.nome : rodada.adversario;
+  const nomeFora = rodada.mando === "casa" ? rodada.adversario : NOSSO_TIME.nome;
+  const escudoCasa = buscarEscudo(times, nomeCasa);
+  const escudoFora = buscarEscudo(times, nomeFora);
 
-  const top5 = [...jogadores].sort((a, b) => b.votos - a.votos).slice(0, 5);
+  const top5 = (squad) => [...(squad || [])].sort((a, b) => b.votos - a.votos).slice(0, 5);
 
   const quemVence =
     pctCasa === pctFora
@@ -101,47 +121,42 @@ export default function PrevisaoPage() {
 
       {jaVotou && (
         <>
-          <div className="barras-previsao">
-            <div className="barra-vertical">
-              <i style={{ height: `${pctCasa}%` }} />
-            </div>
-            <div className="barra-vertical">
-              <i style={{ height: `${pctFora}%` }} />
-            </div>
+          <div className="divisao-previsao">
+            <span className="casa" style={{ width: `${pctCasa}%` }} />
+            <span className="fora" style={{ width: `${pctFora}%` }} />
           </div>
-          <p className="ajuda" style={{ textAlign: "center", marginTop: -12 }}>
-            {quemVence}
-          </p>
+          <p className="ajuda" style={{ textAlign: "center", marginTop: -12 }}>{quemVence}</p>
         </>
       )}
 
-      <div className="bloco">
-        <h2>Mais votados do time</h2>
-        <table className="tabela">
-          <thead>
-            <tr>
-              <th></th>
-              <th>Jogador</th>
-              <th>Posição</th>
-              <th>Votos</th>
-            </tr>
-          </thead>
-          <tbody>
-            {top5.map((j, i) => (
-              <tr key={j.id}>
-                <td className="condensada" style={{ color: "var(--cinza)" }}>
-                  {i + 1}
-                </td>
-                <td>
-                  {j.numero} {j.nome}
-                </td>
-                <td>{j.posicao}</td>
-                <td>{j.votos.toLocaleString("pt-BR")}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="elencos-previsao">
+        <div>
+          <h3>{nomeCasa}</h3>
+          <Elenco squad={squadCasa} lista={top5(squadCasa)} />
+        </div>
+        <div>
+          <h3>{nomeFora}</h3>
+          <Elenco squad={squadFora} lista={top5(squadFora)} />
+        </div>
       </div>
     </main>
+  );
+}
+
+function Elenco({ squad, lista }) {
+  if (squad === null) return <p className="ajuda">Carregando elenco…</p>;
+  if (lista.length === 0) return <p className="ajuda">Elenco indisponível.</p>;
+  return (
+    <ol>
+      {lista.map((j) => (
+        <li key={j.id}>
+          <span>
+            {j.numero > 0 ? `${j.numero} ` : ""}
+            {j.apelido || j.nome}
+          </span>
+          <b>{j.votos > 0 ? j.votos.toLocaleString("pt-BR") : j.posicao}</b>
+        </li>
+      ))}
+    </ol>
   );
 }
