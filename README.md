@@ -50,3 +50,16 @@ Regras:
   com `time` diferente de `"gremio"`) — não é uma sincronização em lote.
 - Depois de atualizar `prisma/schema.prisma` (campos `Player.time` e `Team.apiId`),
   rode `npx prisma db push` de novo pra aplicar no banco.
+
+## Schema em produção (Vercel)
+
+- O script `build` roda `prisma db push` antes de `next build`, então todo deploy na
+  Vercel já sincroniza o schema com o banco de produção — não precisa rodar
+  `npx prisma db push` manualmente lá (só continua necessário em dev local).
+- `npm run db:seed` **não** roda automaticamente no build de propósito: ele faz
+  upsert com os valores de `data/*.json`, e rodar em produção resetaria
+  `Player.votos`/`Round.votantes` acumulados de volta pro valor da semente.
+- `scripts/fix-r12.js` roda no build e só preenche a escalação final da rodada 12
+  (`escalacao`/`escalacaoAdversario`) se ainda estiver vazia — é um ajuste pontual,
+  não um mecanismo genérico; uma mudança de dado futura deve virar seed manual ou
+  outro script específico, não reaproveitar esse.
