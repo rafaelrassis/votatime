@@ -53,9 +53,14 @@ Regras:
 
 ## Schema em produção (Vercel)
 
-- O script `build` roda `prisma db push` antes de `next build`, então todo deploy na
-  Vercel já sincroniza o schema com o banco de produção — não precisa rodar
-  `npx prisma db push` manualmente lá (só continua necessário em dev local).
+- O script `build` roda `prisma db push --accept-data-loss` antes de `next build`,
+  então todo deploy na Vercel já sincroniza o schema com o banco de produção — não
+  precisa rodar `npx prisma db push` manualmente lá (só continua necessário em dev
+  local).
+- `--accept-data-loss` está ligado incondicionalmente, então uma mudança de schema
+  que realmente possa perder dado (dropar coluna, mudar tipo, apertar uma constraint)
+  passa direto sem confirmação manual — revise esse tipo de mudança com cuidado
+  antes de mandar pra `main`, já que o build não vai mais barrar.
 - `npm run db:seed` **não** roda automaticamente no build de propósito: ele faz
   upsert com os valores de `data/*.json`, e rodar em produção resetaria
   `Player.votos`/`Round.votantes` acumulados de volta pro valor da semente.
