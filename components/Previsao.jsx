@@ -73,8 +73,13 @@ export default function Previsao({ rodada, previsao, escudoClube, escudoAdversar
         </div>
 
         {jaVotou && (
-          <div className="barra-previsao">
-            <i style={{ width: `${pctCasa}%` }} />
+          <div className="barras-previsao">
+            <div className="barra-vertical">
+              <i style={{ height: `${pctCasa}%` }} />
+            </div>
+            <div className="barra-vertical">
+              <i style={{ height: `${pctFora}%` }} />
+            </div>
           </div>
         )}
 

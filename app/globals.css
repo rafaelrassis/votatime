@@ -393,15 +393,26 @@ a { color: inherit; }
 .confronto-previsao .lado.escolhido { opacity: 1; }
 .confronto-previsao .x { color: var(--cinza); font-size: 20px; }
 
-.barra-previsao {
-  height: 10px;
-  background: var(--amarelo);
-  margin: 0 0 16px;
-  overflow: hidden;
+.barras-previsao {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 28px;
+  height: 140px;
+  margin: 0 0 20px;
 }
-.barra-previsao i {
-  display: block;
+.barra-vertical {
+  width: 48px;
   height: 100%;
+  background: var(--amarelo);
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+}
+.barra-vertical i {
+  display: block;
+  width: 100%;
   background: var(--gramado);
 }
 
