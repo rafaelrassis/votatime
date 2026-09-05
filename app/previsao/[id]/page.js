@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useParams, notFound } from "next/navigation";
+import { useParams, useRouter, notFound } from "next/navigation";
 import { NOSSO_TIME, lerPrevisao, gravarPrevisao } from "@/lib/store";
 import { buscarEscudo, buscarTimeId } from "@/lib/escudos";
 import Brasao from "@/components/Brasao";
 
 export default function PrevisaoPage() {
   const { id } = useParams();
+  const router = useRouter();
   const [rodada, setRodada] = useState(undefined);
   const [times, setTimes] = useState([]);
   const [squadCasa, setSquadCasa] = useState(null);
@@ -40,7 +41,8 @@ export default function PrevisaoPage() {
     setSquadCasa(null);
     fetch(`/api/squad?time=${timeCasaId}`)
       .then((r) => r.json())
-      .then(setSquadCasa);
+      .then(setSquadCasa)
+      .catch(() => setSquadCasa([]));
   }, [timeCasaId]);
 
   useEffect(() => {
@@ -48,7 +50,8 @@ export default function PrevisaoPage() {
     setSquadFora(null);
     fetch(`/api/squad?time=${timeForaId}`)
       .then((r) => r.json())
-      .then(setSquadFora);
+      .then(setSquadFora)
+      .catch(() => setSquadFora([]));
   }, [timeForaId]);
 
   if (rodada === undefined) return null;
@@ -82,6 +85,13 @@ export default function PrevisaoPage() {
     setRodada(atualizada);
   }
 
+  // antes do palpite, clicar no escudo registra o "quem vence"; depois,
+  // leva pra escalação (a nossa ou o palpite na do adversário).
+  function aoClicarEscudo(lado) {
+    if (!jaVotou) return prever(lado);
+    router.push(lado === rodada.mando ? `/rodada/${rodada.id}` : `/rodada/${rodada.id}/adversario`);
+  }
+
   return (
     <main>
       <div className="linha-info">
@@ -92,7 +102,9 @@ export default function PrevisaoPage() {
 
       <h2>Quem vence?</h2>
       <p className="ajuda">
-        {jaVotou ? "Seu palpite está registrado." : "Toque num escudo pra dar seu palpite."}
+        {jaVotou
+          ? "Seu palpite está registrado. Toque num escudo pra ver a escalação."
+          : "Toque num escudo pra dar seu palpite."}
       </p>
 
       <div className="confronto-previsao">
@@ -101,7 +113,7 @@ export default function PrevisaoPage() {
             nome={nomeCasa}
             escudo={escudoCasa}
             tamanho={72}
-            onClick={() => !jaVotou && prever("casa")}
+            onClick={() => aoClicarEscudo("casa")}
           />
           <span>{nomeCasa}</span>
           {jaVotou && <b>{pctCasa}%</b>}
@@ -112,7 +124,7 @@ export default function PrevisaoPage() {
             nome={nomeFora}
             escudo={escudoFora}
             tamanho={72}
-            onClick={() => !jaVotou && prever("fora")}
+            onClick={() => aoClicarEscudo("fora")}
           />
           <span>{nomeFora}</span>
           {jaVotou && <b>{pctFora}%</b>}
