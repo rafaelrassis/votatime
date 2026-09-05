@@ -72,6 +72,12 @@ export default function Previsao({ rodada, previsao, escudoClube, escudoAdversar
           </div>
         </div>
 
+        {jaVotou && (
+          <div className="barra-previsao">
+            <i style={{ width: `${pctCasa}%` }} />
+          </div>
+        )}
+
         <button type="button" className="fechar" onClick={aoFechar}>
           Voltar
         </button>

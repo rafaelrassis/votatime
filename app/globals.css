@@ -393,6 +393,18 @@ a { color: inherit; }
 .confronto-previsao .lado.escolhido { opacity: 1; }
 .confronto-previsao .x { color: var(--cinza); font-size: 20px; }
 
+.barra-previsao {
+  height: 10px;
+  background: var(--amarelo);
+  margin: 0 0 16px;
+  overflow: hidden;
+}
+.barra-previsao i {
+  display: block;
+  height: 100%;
+  background: var(--gramado);
+}
+
 /* escudo real dentro do Brasao -------------------------------------------- */
 .brasao-img { background: none; padding: 0; overflow: hidden; }
 .brasao-img img { width: 100%; height: 100%; object-fit: contain; border-radius: 50%; }
