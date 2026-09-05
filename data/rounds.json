@@ -30,7 +30,20 @@
     "abre": "2026-09-01T12:00:00-03:00",
     "fecha": "2026-09-08T21:00:00-03:00",
     "votantes": 2384,
-    "escalacao": []
+    "escalacao": ["p1", "p4", "p8", "p9", "p5", "p14", "p12", "p13", "p18", "p17", "p19"],
+    "escalacaoAdversario": [
+      { "numero": 1, "nome": "Gustavo Renner" },
+      { "numero": 2, "nome": "Bruno Kellerman" },
+      { "numero": 3, "nome": "Otávio Reguffe" },
+      { "numero": 4, "nome": "Diego Wottrich" },
+      { "numero": 6, "nome": "Matheus Colatto" },
+      { "numero": 5, "nome": "Cauê Bagé" },
+      { "numero": 8, "nome": "Rafael Zimermann" },
+      { "numero": 10, "nome": "Vinícius Trindade" },
+      { "numero": 7, "nome": "Léo Petry" },
+      { "numero": 9, "nome": "André Wachholz" },
+      { "numero": 11, "nome": "Kevin Rothmann" }
+    ]
   },
   {
     "id": "r11",

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams, notFound } from "next/navigation";
-import { status, lerVotos, gravarVoto, limparVotos, prazo, mapPosicao } from "@/lib/store";
+import { SLOTS, status, lerVotos, gravarVoto, limparVotos, prazo, mapPosicao } from "@/lib/store";
 import { buscarTimeId } from "@/lib/escudos";
 import Campo from "@/components/Campo";
 import Votacao from "@/components/Votacao";
@@ -58,6 +58,24 @@ export default function EscalacaoAdversario() {
   const jogadores = squad || [];
   const feitos = Object.keys(votos).length;
 
+  // rodada encerrada com escalação final cadastrada: mostra ela no campo
+  // no lugar do palpite (mesmo esquema do nosso time, mas com nome/número
+  // direto — não temos um "elenco oficial" real do adversário pra linkar).
+  const revelado = fechada && rodada.escalacaoAdversario?.length === SLOTS.length;
+  const jogadoresRevelados = revelado
+    ? rodada.escalacaoAdversario.map((j, i) => ({
+        id: `rev-${i}`,
+        nome: j.nome,
+        apelido: j.nome,
+        numero: j.numero,
+        posicao: SLOTS[i].posicao,
+        votos: 0,
+      }))
+    : null;
+  const votosRevelados = revelado
+    ? Object.fromEntries(SLOTS.map((s, i) => [s.id, `rev-${i}`]))
+    : null;
+
   async function votar(slotId, playerId) {
     setVotos(gravarVoto(rodada.id, slotId, playerId, NAMESPACE));
     await fetch("/api/votar", {
@@ -86,63 +104,69 @@ export default function EscalacaoAdversario() {
         </span>
       </div>
 
-      {squad === null ? (
+      {revelado ? (
+        <Campo jogadores={jogadoresRevelados} votos={votosRevelados} aoClicar={setAberto} />
+      ) : squad === null ? (
         <p className="ajuda">Carregando elenco…</p>
       ) : jogadores.length === 0 ? (
         <p className="ajuda">Elenco indisponível pra esse time.</p>
       ) : (
-        <>
-          <Campo
-            jogadores={jogadores}
-            votos={votos}
-            aoClicar={(slot) => !naoAbriu && setAberto(slot)}
-          />
+        <Campo
+          jogadores={jogadores}
+          votos={votos}
+          aoClicar={(slot) => !naoAbriu && setAberto(slot)}
+        />
+      )}
 
-          <div className="progresso">
-            {naoAbriu ? (
-              <span>
-                A votação abre em{" "}
-                {new Date(rodada.abre).toLocaleDateString("pt-BR", {
-                  day: "2-digit",
-                  month: "long",
-                })}
-                .
+      {(revelado || jogadores.length > 0) && (
+        <div className="progresso">
+          {naoAbriu ? (
+            <span>
+              A votação abre em{" "}
+              {new Date(rodada.abre).toLocaleDateString("pt-BR", {
+                day: "2-digit",
+                month: "long",
+              })}
+              .
+            </span>
+          ) : revelado ? (
+            <span>
+              Time escolhido por {rodada.votantes.toLocaleString("pt-BR")} pessoas.
+            </span>
+          ) : (
+            <>
+              <span className="condensada">{feitos} de 11</span>
+              <span className="barra">
+                <i style={{ width: `${(feitos / 11) * 100}%` }} />
               </span>
-            ) : (
-              <>
-                <span className="condensada">{feitos} de 11</span>
-                <span className="barra">
-                  <i style={{ width: `${(feitos / 11) * 100}%` }} />
-                </span>
-                <span>
-                  {feitos === 11
-                    ? "Palpite completo."
-                    : fechada
-                      ? "Rodada encerrada — veja como a torcida palpitou."
-                      : "Toque numa posição vazia"}
-                </span>
-                {feitos > 0 && !fechada && (
-                  <button
-                    className="limpar"
-                    onClick={() => {
-                      limparVotos(rodada.id, NAMESPACE);
-                      setVotos({});
-                    }}
-                  >
-                    recomeçar (mock)
-                  </button>
-                )}
-              </>
-            )}
-          </div>
-        </>
+              <span>
+                {feitos === 11
+                  ? "Palpite completo."
+                  : fechada
+                    ? "Rodada encerrada — veja como a torcida palpitou."
+                    : "Toque numa posição vazia"}
+              </span>
+              {feitos > 0 && !fechada && (
+                <button
+                  className="limpar"
+                  onClick={() => {
+                    limparVotos(rodada.id, NAMESPACE);
+                    setVotos({});
+                  }}
+                >
+                  recomeçar (mock)
+                </button>
+              )}
+            </>
+          )}
+        </div>
       )}
 
       {aberto && (
         <Votacao
           slot={aberto}
-          jogadores={jogadores}
-          votos={votos}
+          jogadores={revelado ? jogadoresRevelados : jogadores}
+          votos={revelado ? votosRevelados : votos}
           somenteLeitura={fechada}
           aoVotar={votar}
           aoFechar={() => setAberto(null)}

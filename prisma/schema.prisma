@@ -32,6 +32,12 @@ model Round {
   escalacao  String[] @default([])
   votosCasa  Int      @default(0)
   votosFora  Int      @default(0)
+  // escalação final revelada do adversário quando a rodada encerra: array
+  // de 11 { numero, nome }, na mesma ordem de SLOTS (lib/store.js). Guarda
+  // nome/número direto (não um id de Player) porque o elenco do adversário
+  // vem de fora (football-data.org) e não temos uma "escalação oficial"
+  // real pra sincronizar — é só o resultado do palpite da torcida.
+  escalacaoAdversario Json @default("[]")
 }
 
 // Escudos reais dos clubes, sincronizados via football-data.org
